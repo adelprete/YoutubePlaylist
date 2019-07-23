@@ -1,0 +1,17 @@
+@media screen and (max-width: 1075px) {
+  .option {
+    font-size: 1.4em;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .option {
+    font-size: .8em;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .option {
+    padding: 10px 20px;
+  }
+}

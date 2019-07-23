@@ -1,0 +1,384 @@
+<html>
+  <head>
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/media.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="sub-header">
+          <div class="heading-text">Add any music video to the playlist. &nbspThe 30 most recent videos are kept.</div>
+          <div>
+            <button class="add-button" onclick="openSearchBox()">+ Add Video</button>
+          </div>
+        </div>
+      </div>
+      <div class="playing-now">
+        <div class="video-responsive">
+          <div id="player"></div>
+        </div>
+        <div id="player-description" style="padding: 10px 10px 0px 10px;">
+        </div>
+      </div>
+      <div class="next-song">
+        <div class="arrow" onclick="playNow(1)"></div>
+        <span class="arrow-text">NEXT</span>
+      </div>
+      <div id="queue" class="queue"></div>
+      <div class="footer">
+        <a href="">Github</a>
+      </div>
+
+    </div>
+    <div id="overlay" class="overlay hidden" style="position: fixed; z-index: 20; top: 0px; opacity: .8;background-color: black; height: 100%; width: 100%;" onclick="hideAddPopup()">
+    </div>
+    <div id="add-video-popup" class="add-video-popup hidden">
+      <h3 class="popup-title">Add to the playlist</h3>
+      <div class="popup-search-fields">
+        <div class="title-input-group">
+          <label>Title</labeL>
+          <input id="add-title" class="input" type="text"></input>
+        </div>
+        <div class="artist-input-group">
+          <label>Artist</label>
+          <input id="add-artist" class="input" type="text"></input>
+        </div>
+        <div class="search-input-group">
+          <label>Search Youtube</label>
+          <input id="search" class="input" type="text" onkeyup="searchYoutube()"></input>
+        </div>
+      </div>
+      <div id="search-results" class="search-results"></div>
+      <div><button id="confirm-add" class="add-button confirm-add hidden" onclick="this.disabled=true;;addVideo()">Confirm Add</button></div>
+    </div>
+    
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="http://www.youtube.com/player_api"></script>
+    <script>
+        var player;
+        var playlist = [];
+        var search_throttle = 0;
+        var selected_in_search = {};
+        let selectedResultId = null;
+        
+        
+        function init() {
+          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/dev/playlist')
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(json) {
+              playlist = json['playlist']['Items'];
+              //playlist.sort(() => Math.random() - 0.5);
+              for (var i=1; i<playlist.length; i++) {
+                addToQueue(playlist[i], i);
+              }
+              
+              updatePlayer(playlist[0]);
+            });
+        }
+        
+
+        
+        function playNow(index){
+          let movingToTop = playlist.splice(index,1)[0];
+          let movingToBottom = playlist.shift();
+          playlist.push(movingToBottom);
+          playlist.unshift(movingToTop);
+          
+          let queue = document.getElementById("queue");
+          while (queue.firstChild) {
+              queue.removeChild(queue.firstChild);
+          }
+          
+          for (var i=1; i<playlist.length; i++) {
+            addToQueue(playlist[i], i);
+          }
+          updatePlayer(playlist[0], autoPlay=true);
+        }
+        
+        function playNext(index) {
+          var removed = playlist.splice(index,1)[0];
+          playlist.splice(1,0,removed)
+          
+          var queue = document.getElementById("queue");
+          while (queue.firstChild) {
+              queue.removeChild(queue.firstChild);
+          }
+          for (var i=1; i<playlist.length; i++) {
+            addToQueue(playlist[i], i);
+          }
+        }
+        
+        function updatePlayer(item, autoPlay=false) {
+          player.cueVideoById({'videoId': item.VideoId});
+          if (autoPlay){
+            player.playVideo();
+          }
+          
+          var playerDesc = document.getElementById("player-description");
+          while (playerDesc.firstChild) {
+              playerDesc.removeChild(playerDesc.firstChild);
+          }
+          appendDescription(item, playerDesc);
+        }
+        
+        function appendDescription(item, parentElement){
+          var spanTitle = document.createElement('span');
+          spanTitle.className = 'video-title';
+          if (item.CustomTitle) {
+            spanTitle.innerHTML = item.CustomTitle + '<br>';
+            parentElement.appendChild(spanTitle);
+          }
+          if (item.CustomArtist) {
+            var spanArtist = document.createElement('span');
+            spanArtist.className = 'video-artist';
+            spanArtist.innerHTML = item.CustomArtist + '<br>';
+            parentElement.appendChild(spanArtist);
+          }
+          if (!item.CustomTitle && !item.CustomArtist) {
+            spanTitle.innerHTML = item.DefaultTitle + '<br>';
+            parentElement.appendChild(spanTitle);
+          }
+          var spanDuration = document.createElement('span');
+          spanDuration.className = 'video-duration';
+          spanDuration.innerHTML = item.Duration;
+          parentElement.appendChild(spanDuration);
+        }
+
+        function authenticate() {
+          return gapi.auth2.getAuthInstance()
+              .signIn({scope: "https://www.googleapis.com/auth/youtube.force-ssl"})
+              .then(function() { console.log("Sign-in successful"); },
+                    function(err) { console.error("Error signing in", err); });
+        }
+        function loadClient() {
+          gapi.client.setApiKey("AIzaSyCE3B2Xk3k7Gbe8rSQWgkBdLT10y-4mKso");
+          return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+              .then(function() { console.log("GAPI client loaded for API"); },
+                    function(err) { console.error("Error loading GAPI client for API", err); });
+        }
+        
+        // Make sure the client is loaded and sign-in is complete before calling this method.
+        function executeSearch(query) {
+          return gapi.client.youtube.search.list({
+            'part': 'snippet',
+            'q': query,
+            'type': 'video',
+            'videoCategoryId': '10',
+            'videoEmbeddable': 'true'
+          })
+          .then(function(response) {
+            clearSearchResults();
+            let items = response.result.items;
+            console.log('items.length: ', items.length);
+            for (var i=0;i<items.length;i++) {
+              if (!items[i].snippet.channelTitle.toLowerCase().includes('vevo')) {
+                addItemToSearchResults(items[i].id.videoId, items[i]);
+              }
+            }
+            var searchResults = document.getElementById("search-results");
+            searchResults.classList.remove('hidden');
+            hideConfirmButton();
+          },
+          function(err) {console.error("Execute error", err);});
+        }
+        
+        function addItemToSearchResults(videoId, item){
+          var divResult = document.createElement('div');
+          divResult.setAttribute('class', 'result');
+          divResult.innerHTML = 
+            '<input id="'+videoId+'_result" type="radio" name="result" value="'+videoId+'" class="hidden"> \
+             <label for="'+videoId+'_result" class="result-description" onclick="showConfirmButton()"> \
+              <img src="'+item.snippet.thumbnails.medium.url+'"> \
+              <span>'+item.snippet.title+'<br></span> \
+             </label>';
+          var searchResults = document.getElementById("search-results");
+          searchResults.appendChild(divResult);
+        }
+        
+        function showConfirmButton() {
+          document.getElementById("confirm-add").classList.remove('hidden');
+        }
+        
+        function hideConfirmButton() {
+          document.getElementById("confirm-add").classList.add('hidden');
+        }
+        
+        function selectResult(result){
+          selectedResultId = result.getAttribute('data-videoId')
+          document.getElementById('confirm-add').classList.remove('hidden');
+        };
+        
+        function addVideo() {
+          let addButton = document.querySelector('.confirm-add');
+          let selectedVideoId = document.querySelector('input[name="result"]:checked').value;
+          const found = playlist.some(el => el.VideoId === selectedVideoId);
+          if (!found) {
+            let videoDetails = gapi.client.youtube.videos.list({
+              'part': 'contentDetails,snippet',
+              'id': selectedVideoId
+            })
+            .then(function(response) {
+              let result = response.result.items[0];
+              duration = formatDuration(result.contentDetails.duration);
+              if (duration) {
+                let item = {
+                  'VideoId': result.id,
+                  'DefaultTitle': result.snippet.title,
+                  'ImageUrl': result.snippet.thumbnails.medium.url,
+                  'Duration': duration
+                }
+                let customTitle = document.getElementById("add-title").value;
+                if (customTitle) item['CustomTitle'] = customTitle;
+                let customArtist = document.getElementById("add-artist").value;
+                if (customArtist) item['CustomArtist'] = customArtist;
+                
+                addToDB(item);
+                addButton.disabled = false;
+              }
+            },
+            function(err) { 
+              console.error("Execute error", err); 
+              addButton.disabled = false;
+            });
+
+            
+          }
+          else {
+            alert('Video is already in the list');
+            addButton.disabled = false;
+          }
+        }
+        
+        function formatDuration(duration){
+          formatted_duration = '';
+          hours = duration.match(/(\d+)H/);
+          minutes = duration.match(/(\d+)M/);
+          seconds = duration.match(/(\d+)S/);
+          if (hours || (minutes && minutes[1] >= 20)){
+            alert('Video must be under 20 minutes long');
+            return null;
+          }
+          if (minutes[1].length < 10) minutes[1] = '0'+minutes[1];
+          if (!seconds) seconds = '00';
+          return `${minutes[1]}:${seconds[1]}`;
+        }
+        
+        function addToDB(item){
+          postParams = {
+            'method': 'POST',
+            'header': {'Content-Type': 'application/json'},
+            'body': JSON.stringify(item)
+          }
+          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/dev/add-video', postParams)
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(myJson) {
+              playlist.push(item);
+              addToQueue(item, playlist.length-1);
+              hideAddPopup();
+            });
+        }
+        
+        function addToQueue(item, index) {
+          var divParent = document.createElement('div');
+          divParent.setAttribute('class', 'preview');
+          divParent.setAttribute('style', '');
+          var imgChild = document.createElement('img');
+          imgChild.src = item.ImageUrl;
+          divParent.appendChild(imgChild);
+          var divDescription = document.createElement('div');
+          divDescription.className = 'description';
+          divParent.appendChild(divDescription);
+          appendDescription(item, divDescription);
+          
+          var divOptions = document.createElement('div');
+          divOptions.innerHTML = "<div class='option left' onclick='playNow("+index+")'>Play Now</div> \
+          <div class='option right' onclick='playNext("+index+")'>Play Next</div>";
+          divParent.appendChild(divOptions);
+          
+          var divQueue = document.getElementById("queue");
+          divQueue.appendChild(divParent);
+          
+          var hr = document.createElement('hr');
+          divQueue.appendChild(hr);
+        }
+        
+        
+        function searchYoutube() {
+          search_throttle++;
+          var input;
+          input = document.getElementById("search");
+          query = input.value;
+          if (query.length >= 5 && search_throttle % 4 == 0){
+            console.log('executeSearch()')
+            executeSearch(query);
+          }
+        }
+        
+        gapi.load("client:auth2", function() {
+          gapi.auth2.init({client_id: "816024298430-bc7f5ke7f7i0tphiuf818iddarognobs.apps.googleusercontent.com"})
+            .then(function(){
+              authenticate().then(loadClient)
+            });
+        });
+        
+        function openSearchBox(){
+          document.getElementById('overlay').classList.remove('hidden');
+          document.getElementById('add-video-popup').classList.remove('hidden');
+        };
+        
+        function hideAddPopup(){
+          document.getElementById('overlay').classList.add('hidden');
+          document.getElementById('add-video-popup').classList.add('hidden');
+          document.getElementById('search').value = '';
+          document.getElementById('add-title').value = '';
+          document.getElementById('add-artist').value = '';
+          clearSearchResults();
+          hideConfirmButton();
+        };
+        
+        function clearSearchResults(){
+          var searchResults = document.getElementById("search-results");
+          while (searchResults.firstChild) {
+              searchResults.removeChild(searchResults.firstChild);
+          }
+        }
+        
+        
+        // create youtube player
+        function onYouTubePlayerAPIReady() {
+            player = new YT.Player('player', {
+              width: '640',
+              height: '390',
+              videoId: '',
+              events: {
+                onReady: onPlayerReady,
+                onStateChange: onPlayerStateChange
+              }
+            });
+        }
+
+        // autoplay video
+        function onPlayerReady(event) {
+            init();
+        }
+
+        // when video ends
+        function onPlayerStateChange(event) {
+            if(event.data === 0) {          
+                playNow(1);
+            }
+        }
+        
+        function onError(event){
+          if(event.data == 101) {
+            
+          }
+        }
+        
+    </script>
+  </body>
+</html>
