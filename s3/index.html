@@ -63,7 +63,7 @@
         
         
         function init() {
-          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/dev/playlist')
+          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/prod/playlist')
             .then(function(response) {
               return response.json();
             })
@@ -271,7 +271,7 @@
             'header': {'Content-Type': 'application/json'},
             'body': JSON.stringify(item)
           }
-          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/dev/add-video', postParams)
+          fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/prod/add-video', postParams)
             .then(function(response) {
               return response.json();
             })

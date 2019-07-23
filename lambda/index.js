@@ -21,8 +21,6 @@ exports.handler = (event, context, callback) => {
             });
           }
         });
-        
-        
     }
     else if (event.path === '/playlist') {
         let params = {
