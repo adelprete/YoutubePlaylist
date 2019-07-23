@@ -1,34 +1,36 @@
 <html>
   <head>
+    <title>Youtube Playlist</title>
     <link href="css/style.css" rel="stylesheet">
     <link href="css/media.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <div class="sub-header">
-          <div class="heading-text">Add any music video to the playlist. &nbspThe 30 most recent videos are kept.</div>
-          <div>
-            <button class="add-button" onclick="openSearchBox()">+ Add Video</button>
+        <div class="header">
+          <div class="sub-header">
+            <div class="heading-text">Add any music video to the playlist. &nbspThe 30 most recent videos are kept.</div>
+            <div>
+              <button class="add-button" onclick="openSearchBox()">+ Add Video</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="playing-now">
-        <div class="video-responsive">
-          <div id="player"></div>
+        <div class="main">
+          <div class="playing-now">
+            <div class="video-responsive">
+              <div id="player"></div>
+            </div>
+            <div id="player-description" style="padding: 10px 10px 0px 10px;">
+            </div>
+          </div>
+          <div class="next-song">
+            <div class="arrow" onclick="playNow(1)"></div>
+            <span class="arrow-text">NEXT</span>
+          </div>
+          <div id="queue" class="queue"></div>
         </div>
-        <div id="player-description" style="padding: 10px 10px 0px 10px;">
+        <div class="footer">
+          <a href="https://github.com/adelprete/YoutubePlaylist" target="_blank">Github</a>
         </div>
-      </div>
-      <div class="next-song">
-        <div class="arrow" onclick="playNow(1)"></div>
-        <span class="arrow-text">NEXT</span>
-      </div>
-      <div id="queue" class="queue"></div>
-      <div class="footer">
-        <a href="https://github.com/adelprete/YoutubePlaylist">Github</a>
-      </div>
-
     </div>
     <div id="overlay" class="overlay hidden" style="position: fixed; z-index: 20; top: 0px; opacity: .8;background-color: black; height: 100%; width: 100%;" onclick="hideAddPopup()">
     </div>
