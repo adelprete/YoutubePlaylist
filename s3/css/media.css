@@ -11,7 +11,44 @@
 }
 
 @media screen and (max-width: 620px) {
+  .add-button {
+      padding: 5px;
+  }
+  
   .option {
-    padding: 10px 20px;
+    font-size: 1.4em;
+  }
+  
+  .header {
+    padding: 0px 10px;
+    grid-template-columns: auto;
+    grid-template-areas: 
+      'sub-header';
+  }
+  
+  .main {
+    padding: 0px 10px;
+    grid-template-columns: auto;
+    grid-template-areas: 
+      'playing-now'
+      'next-song'
+      'queue';
+  }
+}
+
+
+@media screen and (max-width: 400px) {
+  .header {
+    grid-template-columns: auto;
+    grid-template-areas: 
+      'sub-header';
+  }
+  
+  .main {
+    grid-template-areas: 
+      'playing-now'
+      'next-song'
+      'queue';
+    grid-template-columns: auto;
   }
 }

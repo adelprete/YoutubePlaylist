@@ -32,13 +32,13 @@
           <a href="https://github.com/adelprete/YoutubePlaylist" target="_blank">Github</a>
         </div>
     </div>
-    <div id="overlay" class="overlay hidden" style="position: fixed; z-index: 20; top: 0px; opacity: .8;background-color: black; height: 100%; width: 100%;" onclick="hideAddPopup()">
+    <div id="overlay" class="overlay hidden" onclick="hideAddPopup()">
     </div>
     <div id="add-video-popup" class="add-video-popup hidden">
       <h3 class="popup-title">Add to the playlist</h3>
       <div class="popup-search-fields">
         <div class="title-input-group">
-          <label>Title</labeL>
+          <label>Title</label>
           <input id="add-title" class="input" type="text"></input>
         </div>
         <div class="artist-input-group">
@@ -73,14 +73,12 @@
               playlist = json['playlist']['Items'];
               //playlist.sort(() => Math.random() - 0.5);
               for (var i=1; i<playlist.length; i++) {
-                addToQueue(playlist[i], i);
+                addVideoToQueue(playlist[i], i);
               }
               
-              updatePlayer(playlist[0]);
+              cueVideo(playlist[0]);
             });
         }
-        
-
         
         function playNow(index){
           let movingToTop = playlist.splice(index,1)[0];
@@ -94,9 +92,9 @@
           }
           
           for (var i=1; i<playlist.length; i++) {
-            addToQueue(playlist[i], i);
+            addVideoToQueue(playlist[i], i);
           }
-          updatePlayer(playlist[0], autoPlay=true);
+          cueVideo(playlist[0], autoPlay=true);
         }
         
         function playNext(index) {
@@ -108,11 +106,11 @@
               queue.removeChild(queue.firstChild);
           }
           for (var i=1; i<playlist.length; i++) {
-            addToQueue(playlist[i], i);
+            addVideoToQueue(playlist[i], i);
           }
         }
         
-        function updatePlayer(item, autoPlay=false) {
+        function cueVideo(item, autoPlay=false) {
           player.cueVideoById({'videoId': item.VideoId});
           if (autoPlay){
             player.playVideo();
@@ -122,10 +120,10 @@
           while (playerDesc.firstChild) {
               playerDesc.removeChild(playerDesc.firstChild);
           }
-          appendDescription(item, playerDesc);
+          appendVideoDescription(item, playerDesc);
         }
         
-        function appendDescription(item, parentElement){
+        function appendVideoDescription(item, parentElement){
           var spanTitle = document.createElement('span');
           spanTitle.className = 'video-title';
           if (item.CustomTitle) {
@@ -147,13 +145,7 @@
           spanDuration.innerHTML = item.Duration;
           parentElement.appendChild(spanDuration);
         }
-
-        function authenticate() {
-          return gapi.auth2.getAuthInstance()
-              .signIn({scope: "https://www.googleapis.com/auth/youtube.force-ssl"})
-              .then(function() { console.log("Sign-in successful"); },
-                    function(err) { console.error("Error signing in", err); });
-        }
+        
         function loadClient() {
           gapi.client.setApiKey("AIzaSyCE3B2Xk3k7Gbe8rSQWgkBdLT10y-4mKso");
           return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
@@ -279,22 +271,21 @@
             })
             .then(function(myJson) {
               playlist.push(item);
-              addToQueue(item, playlist.length-1);
+              addVideoToQueue(item, playlist.length-1);
               hideAddPopup();
             });
         }
         
-        function addToQueue(item, index) {
+        function addVideoToQueue(item, index) {
           var divParent = document.createElement('div');
           divParent.setAttribute('class', 'preview');
-          divParent.setAttribute('style', '');
           var imgChild = document.createElement('img');
           imgChild.src = item.ImageUrl;
           divParent.appendChild(imgChild);
           var divDescription = document.createElement('div');
           divDescription.className = 'description';
           divParent.appendChild(divDescription);
-          appendDescription(item, divDescription);
+          appendVideoDescription(item, divDescription);
           
           var divOptions = document.createElement('div');
           divOptions.innerHTML = "<div class='option left' onclick='playNow("+index+")'>Play Now</div> \
@@ -323,7 +314,7 @@
         gapi.load("client:auth2", function() {
           gapi.auth2.init({client_id: "816024298430-bc7f5ke7f7i0tphiuf818iddarognobs.apps.googleusercontent.com"})
             .then(function(){
-              authenticate().then(loadClient)
+              loadClient();
             });
         });
         
