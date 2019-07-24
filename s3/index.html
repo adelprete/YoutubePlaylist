@@ -71,7 +71,7 @@
             })
             .then(function(json) {
               playlist = json['playlist']['Items'];
-              //playlist.sort(() => Math.random() - 0.5);
+              playlist.sort(() => Math.random() - 0.5);
               for (var i=1; i<playlist.length; i++) {
                 addVideoToQueue(playlist[i], i);
               }
@@ -255,7 +255,8 @@
             return null;
           }
           if (minutes[1].length < 10) minutes[1] = '0'+minutes[1];
-          if (!seconds) seconds = '00';
+          if (seconds && seconds[1].length < 10) seconds[1] = '0'+seconds[1];
+          if (!seconds) seconds[1] = '00';
           return `${minutes[1]}:${seconds[1]}`;
         }
         
@@ -364,12 +365,6 @@
             if(event.data === 0) {          
                 playNow(1);
             }
-        }
-        
-        function onError(event){
-          if(event.data == 101) {
-            
-          }
         }
         
     </script>
