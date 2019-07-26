@@ -165,7 +165,6 @@
           .then(function(response) {
             clearSearchResults();
             let items = response.result.items;
-            console.log('items.length: ', items.length);
             for (var i=0;i<items.length;i++) {
               if (!items[i].snippet.channelTitle.toLowerCase().includes('vevo')) {
                 addItemToSearchResults(items[i].id.videoId, items[i]);
@@ -175,7 +174,13 @@
             searchResults.classList.remove('hidden');
             hideConfirmButton();
           },
-          function(err) {console.error("Execute error", err);});
+          function(err) {
+            console.error("Execute error", err);
+            clearSearchResults();
+            var searchResults = document.getElementById("search-results");
+            searchResults.classList.remove('hidden');
+            searchResults.innerHTML = '<p>Youtube Query limit reached.  Come back tomorrow.</p>';
+          });
         }
         
         function addItemToSearchResults(videoId, item){
@@ -303,11 +308,9 @@
         
         function searchYoutube() {
           search_throttle++;
-          var input;
-          input = document.getElementById("search");
+          var input = document.getElementById("search");
           query = input.value;
-          if (query.length >= 5 && search_throttle % 4 == 0){
-            console.log('executeSearch()')
+          if (query.length >= 5 && search_throttle % 5 == 0){
             executeSearch(query);
           }
         }

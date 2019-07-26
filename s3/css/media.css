@@ -1,4 +1,18 @@
+@media screen and (min-width: 2000px) {
+  .option {
+    font-size: 3em;
+  }
+  
+  .left {
+    left: 25%;
+  }
+}
+
 @media screen and (max-width: 1075px) {
+  .left {
+    left: 11%;
+  }
+  
   .option {
     font-size: 1.4em;
   }
@@ -13,6 +27,10 @@
 @media screen and (max-width: 620px) {
   .add-button {
       padding: 5px;
+  }
+  
+  .left {
+    left: 5%;
   }
   
   .option {
@@ -38,6 +56,15 @@
 
 
 @media screen and (max-width: 400px) {
+  
+  .left {
+    left: 5%;
+  }
+  
+  .option {
+    font-size: 1em;
+  }
+  
   .header {
     grid-template-columns: auto;
     grid-template-areas: 
