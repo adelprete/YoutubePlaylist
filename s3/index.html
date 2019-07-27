@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width">
     <title>Youtube Playlist</title>
     <link href="css/style.css" rel="stylesheet">
     <link href="css/media.css" rel="stylesheet">
@@ -8,7 +9,7 @@
     <div class="container">
         <div class="header">
           <div class="sub-header">
-            <div class="heading-text">Add any music video to the playlist. &nbspThe 30 most recent videos are kept.</div>
+            <div class="heading-text">Add any music video to the playlist. <br id="heading-br"> The 30 most recent videos are kept.</div>
             <div>
               <button class="add-button" onclick="openSearchBox()">+ Add Video</button>
             </div>
@@ -22,8 +23,9 @@
             <div id="player-description" style="padding: 10px 10px 0px 10px;">
             </div>
           </div>
-          <div class="next-song">
-            <div class="arrow" onclick="playNow(1)"></div>
+          <div class="next-song" onclick="playNow(1)">
+            <div class="click-area"></div>
+            <img src='media/wide_chevron.png'>
             <span class="arrow-text">NEXT</span>
           </div>
           <div id="queue" class="queue"></div>
@@ -294,8 +296,9 @@
           appendVideoDescription(item, divDescription);
           
           var divOptions = document.createElement('div');
-          divOptions.innerHTML = "<div class='option left' onclick='playNow("+index+")'>Play Now</div> \
-          <div class='option right' onclick='playNext("+index+")'>Play Next</div>";
+          divOptions.className = 'options';
+          divOptions.innerHTML = "<div class='choice left' onclick='playNow("+index+")'><p>Play Now</p></div> \
+          <div class='choice right' onclick='playNext("+index+")'><p>Play Next</p></div>";
           divParent.appendChild(divOptions);
           
           var divQueue = document.getElementById("queue");
