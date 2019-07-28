@@ -84,8 +84,43 @@
   .preview:focus .options {
     display: grid;
   }
+  
+  .preview .description {
+    padding: 0px 15px 0px 15px;
+  }
+  
+  .add-video-popup {
+    font-size: 1rem;
+  }
 }
 
+@media screen and (max-width: 605px) {
+  
+  .add-video-popup {
+    left: 10;
+    top: 10;
+    right: 10;
+    padding: 10px;
+    margin: 0px;
+  }
+  
+  .popup-title: {
+    font-size: 1.3em;
+  }
+  
+  .popup-search-fields {
+    grid-template-areas: 
+      'title-input-group' 
+      'artist-input-group'
+      'search-input-group';
+    grid-template-columns: auto;
+  }
+  
+  .search-results {
+    padding: 10px 0px;
+  }
+
+}
 
 @media screen and (max-width: 415px) {
   
