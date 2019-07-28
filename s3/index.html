@@ -261,8 +261,8 @@
             alert('Video must be under 20 minutes long');
             return null;
           }
-          if (minutes[1].length < 10) minutes[1] = '0'+minutes[1];
-          if (seconds && seconds[1].length < 10) seconds[1] = '0'+seconds[1];
+          if (minutes[1] < 10) minutes[1] = '0'+minutes[1];
+          if (seconds && seconds[1] < 10) seconds[1] = seconds[1]+'0';
           if (!seconds) seconds[1] = '00';
           return `${minutes[1]}:${seconds[1]}`;
         }
@@ -287,6 +287,7 @@
         function addVideoToQueue(item, index) {
           var divParent = document.createElement('div');
           divParent.setAttribute('class', 'preview');
+          divParent.setAttribute('tabindex', '0');
           var imgChild = document.createElement('img');
           imgChild.src = item.ImageUrl;
           divParent.appendChild(imgChild);
@@ -313,7 +314,7 @@
           search_throttle++;
           var input = document.getElementById("search");
           query = input.value;
-          if (query.length >= 5 && search_throttle % 5 == 0){
+          if (query.length >= 6 && search_throttle % 6 == 0){
             executeSearch(query);
           }
         }
