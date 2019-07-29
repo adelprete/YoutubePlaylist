@@ -313,6 +313,10 @@ hr {
 }
 /* END ADD BUTTON */
 
+#player-desctiption {
+  padding: 10px 10px 0px 10px;
+}
+
 /* ADD VIDEO POPUP */
 .add-video-popup {
   display: grid;
