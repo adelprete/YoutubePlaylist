@@ -309,6 +309,8 @@ function addToDB(item){
       playlist.push(item);
       addVideoToQueue(item, playlist.length-1);
       hideSearchForm();
+      let addButton = document.querySelector('.confirm-add');
+      addButton.disabled = false;
     });
 }
 
