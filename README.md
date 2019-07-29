@@ -4,7 +4,7 @@ A simple music oriented video playlist that users can add random videos to. The 
 
 This static website is hosted from an AWS S3 buckets and uses various AWS services along the way to get the job done.
 
-No external libraries were used on the frontend as I tried to stick with vanilla.js, css and simple HTML.
+No external libraries were used on the frontend as I tried to stick with vanilla.js, css, css grid and simple HTML.
 
 ## AWS Tools Used
 
