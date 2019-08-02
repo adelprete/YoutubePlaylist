@@ -326,16 +326,16 @@ hr {
     'popup-search-results'
     'popup-confirm';
   position:absolute;
-  left:50%;
-  top:50%;
+  left: 50%;
+  top: 50%;
   z-index: 50;
-  max-width:600px;
+  max-width: 528px;
   height: auto;
-  margin:0 auto;
+  margin: 0 auto;
   background: linear-gradient(180deg,#789 0,#456);
   border-radius: 3px;
-  margin-left:-300px;
-  margin-top:-300px;
+  margin-left: -300px;
+  margin-top: -300px;
   padding: 30px 40px;
 }
 
