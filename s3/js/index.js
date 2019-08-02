@@ -152,7 +152,6 @@ function playNext(index) {
 
 /**
 * Throttles youtube searches so that we dont hit our quota too fast.
-*
 */
 function searchYoutube() {
   searchThrottle++;
@@ -220,7 +219,6 @@ function addItemToSearchResults(item){
 
 /**
 * Shows the button button that will add a youtube search result video.
-*
 */
 function showConfirmButton() {
   document.getElementById("confirm-add").classList.remove('hidden');
@@ -228,10 +226,24 @@ function showConfirmButton() {
 
 /**
 * Hides the button button that will add a youtube search result video.
-*
 */
 function hideConfirmButton() {
   document.getElementById("confirm-add").classList.add('hidden');
+}
+
+/**
+* Validates the form 
+*/
+function validateForm() {
+  let customTitle = document.getElementById("add-title").value;
+  let customArtist = document.getElementById("add-artist").value;
+  if (customTitle && customArtist) {
+    addVideo();
+  }
+  else {
+    document.querySelector('#confirm-add').disabled = false;
+    document.querySelector('#add-form').reportValidity();
+  }
 }
 
 /**
@@ -265,10 +277,8 @@ function addVideo() {
           'ImageUrl': result.snippet.thumbnails.medium.url,
           'Duration': duration
         }
-        let customTitle = document.getElementById("add-title").value;
-        if (customTitle) item['CustomTitle'] = customTitle;
-        let customArtist = document.getElementById("add-artist").value;
-        if (customArtist) item['CustomArtist'] = customArtist;
+        item['CustomTitle'] = document.getElementById("add-title").value;
+        item['CustomArtist'] = document.getElementById("add-artist").value;
         
         addToDB(item);
       }
@@ -315,17 +325,15 @@ function addToDB(item){
 }
 
 /**
-* Opens 
-*
+* Opens the add video form
 */
-function openSearchForm(){
+function openAddVideoForm(){
   document.getElementById('overlay').classList.remove('hidden');
   document.getElementById('add-video-popup').classList.remove('hidden');
 };
 
 /**
 * Clears search results.
-*
 */
 function hideSearchForm(){
   document.getElementById('overlay').classList.add('hidden');
@@ -351,7 +359,6 @@ function clearSearchResults(){
 
 /**
 * Initalize the Youtube Player
-*
 */
 function onYouTubePlayerAPIReady() {
     player = new YT.Player('player', {
@@ -388,7 +395,6 @@ function onPlayerStateChange(event) {
 /**
 * Loads the google api (gapi) so that we can search youtube for videos and 
 * grab their details.
-*
 */
 function loadClient() {
   gapi.client.setApiKey("AIzaSyCE3B2Xk3k7Gbe8rSQWgkBdLT10y-4mKso");
