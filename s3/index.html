@@ -2,8 +2,8 @@
   <head>
     <meta name="viewport" content="width=device-width">
     <title>Youtube Playlist</title>
-    <link href="css/style-2.css" rel="stylesheet">
-    <link href="css/media.css" rel="stylesheet">
+    <link href="css/style-3.css" rel="stylesheet">
+    <link href="css/media-1.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
@@ -37,24 +37,29 @@
     <div id="overlay" class="overlay hidden" onclick="hideSearchForm()">
     </div>
     <div id="add-video-popup" class="add-video-popup hidden">
-      <form id="add-form">
+      <form id="add-form" class="add-form">
         <h3 class="popup-title">Add to the playlist</h3>
         <div class="popup-search-fields">
-          <div class="title-input-group">
-            <label>Title</label>
-            <input id="add-title" class="input" type="text" required>
-          </div>
           <div class="artist-input-group">
-            <label>Artist</label>
-            <input id="add-artist" class="input" type="text" required>
+            <label>Display Artist</label>
+            <input id="add-artist" class="input" type="text" oninput="searchTitleArtist()" required>
           </div>
-          <div class="search-input-group">
-            <label>Search Youtube</label>
-            <input id="search" class="input" type="text" onkeyup="searchYoutube()">
+          <div class="title-input-group">
+            <label>Display Title</label>
+            <input id="add-title" class="input" type="text" oninput="searchTitleArtist()" required>
+          </div>
+          <div class="search-options-toggle" onclick="toggleSearchOptions()">
+            <span>advanced video search <div class="arrow">&lsaquo;</div></span>
+          </div>
+          <div id="search-input-group" class="search-input-group hidden">
+            <label>Youtube Search Bar <small>(text or video id)</small></label>
+            <input id="search-input" class="input" type="text" oninput="searchYoutube(this.value)">
           </div>
         </div>
-        <div id="search-results" class="search-results"></div>
-        <div><button id="confirm-add" class="add-button confirm-add hidden" onclick="this.disabled=true;validateForm()">Add Video</button></div>
+        <div id="popup-break" class="popup-break hidden"><div class="break"></div></div>
+        <div id="search-results" class="popup-search-results">
+        </div>
+        <div class="confirm-add-group"><button id="confirm-add" class="add-button confirm-add hidden" onclick="this.disabled=true;validateForm()">Add Video</button></div>
       </form>
     </div>
     

@@ -1,8 +1,8 @@
 
-var player;
-var playlist = [];
-var searchThrottle = 0;
+let player;
+let playlist = [];
 let selectedResultId = null;
+let timeout = null;
 
 
 /**
@@ -13,6 +13,9 @@ let selectedResultId = null;
 * video in the array is cued into the player.
 */
 function init() {
+  // hide fields after they've gotten their listners
+  //document.getElementById("search-input-group").classList.toggle("hidden");
+  
   fetch('https://4m42dwn6k5.execute-api.us-east-1.amazonaws.com/prod/playlist')
     .then(function(response) {
       return response.json();
@@ -151,13 +154,36 @@ function playNext(index) {
 }
 
 /**
+* Toggle search options
+*/
+function toggleSearchOptions() {
+  document.getElementById("search-input-group").classList.toggle("hidden");
+  document.querySelector(".arrow").classList.toggle("flip");
+}
+
+/**
 * Throttles youtube searches so that we dont hit our quota too fast.
 */
-function searchYoutube() {
-  searchThrottle++;
-  let query = document.getElementById("search").value;
-  if (query.length >= 6 && searchThrottle % 6 == 0){
-    executeSearch(query);
+function searchYoutube(query) {
+  clearTimeout(timeout);
+
+  timeout = setTimeout(function () {
+      if (query.length >= 5) executeSearch(query);
+  }, 500);
+}
+
+/**
+* Does a search on the concatenation of display title and display artist
+* if the custom search input is hidden.
+*/
+function searchTitleArtist() {
+  let displayTitle = document.getElementById("add-title").value;
+  let displayArtist = document.getElementById("add-artist").value;
+  let query = `${displayArtist} - ${displayTitle}`;
+  
+  if (document.getElementById("search-input-group").classList.contains('hidden')){
+    document.getElementById("search-input").value = query;
+    searchYoutube(query);
   }
 }
 
@@ -170,6 +196,9 @@ function searchYoutube() {
 * @param {string} query  query is the string to search for.
 */
 function executeSearch(query) {
+  let searchResults = document.getElementById("search-results");
+  let popupBreak = document.getElementById("popup-break");
+  
   return gapi.client.youtube.search.list({
     'part': 'snippet',
     'q': query,
@@ -179,20 +208,31 @@ function executeSearch(query) {
   })
   .then(function(response) {
     clearSearchResults();
-    let items = response.result.items;
-    for (var i=0;i<items.length;i++) {
-      if (!items[i].snippet.channelTitle.toLowerCase().includes('vevo')) {
-        addItemToSearchResults(items[i]);
+    // display help text
+    if (response.result.items.length) {
+      searchResults.innerHTML = '<p>Select a video below to accompany the display text</p>';
+      
+      // start formatting the results
+      let items = response.result.items;
+      for (var i=0;i<items.length;i++) {
+        if (!items[i].snippet.channelTitle.toLowerCase().includes('vevo')) {
+          addItemToSearchResults(items[i]);
+        }
       }
     }
-    var searchResults = document.getElementById("search-results");
+    else {
+      searchResults.innerHTML = '<p>no eligible videos found :(</p>';
+    }
+    
+    // show the results to the user
+    popupBreak.classList.remove('hidden');
     searchResults.classList.remove('hidden');
     hideConfirmButton();
   },
   function(err) {
     console.error("Execute error", err);
     clearSearchResults();
-    var searchResults = document.getElementById("search-results");
+    popupBreak.classList.remove('hidden');
     searchResults.classList.remove('hidden');
     searchResults.innerHTML = '<p>Youtube Query limit reached.  Come back tomorrow.</p>';
   });
