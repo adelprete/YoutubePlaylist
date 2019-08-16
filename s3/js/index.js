@@ -211,7 +211,7 @@ function executeSearch(query) {
     clearSearchResults();
     // display help text
     if (response.result.items.length) {
-      searchResults.innerHTML = '<p>Select a video below to accompany the display text</p>';
+      searchResults.innerHTML = '<p>Select a video to accompany the Artist name and Title entered above</p>';
       
       // start formatting the results
       let items = response.result.items;
