@@ -198,6 +198,7 @@ function searchTitleArtist() {
 function executeSearch(query) {
   let searchResults = document.getElementById("search-results");
   let popupBreak = document.getElementById("popup-break");
+  let searchOptions = document.getElementById("popup-search-options");
   
   return gapi.client.youtube.search.list({
     'part': 'snippet',
@@ -225,6 +226,7 @@ function executeSearch(query) {
     }
     
     // show the results to the user
+    searchOptions.classList.remove('hidden');
     popupBreak.classList.remove('hidden');
     searchResults.classList.remove('hidden');
     hideConfirmButton();
@@ -232,6 +234,7 @@ function executeSearch(query) {
   function(err) {
     console.error("Execute error", err);
     clearSearchResults();
+    searchOptions.classList.remove('hidden');
     popupBreak.classList.remove('hidden');
     searchResults.classList.remove('hidden');
     searchResults.innerHTML = '<p>Youtube Query limit reached.  Come back tomorrow.</p>';
