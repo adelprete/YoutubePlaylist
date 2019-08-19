@@ -381,7 +381,7 @@ function openAddVideoForm(){
 function hideSearchForm(){
   document.getElementById('overlay').classList.add('hidden');
   document.getElementById('add-video-popup').classList.add('hidden');
-  document.getElementById('search').value = '';
+  document.getElementById('search-input').value = '';
   document.getElementById('add-title').value = '';
   document.getElementById('add-artist').value = '';
   clearSearchResults();
@@ -474,8 +474,9 @@ function formatDuration(duration){
     alert('Video must be under 20 minutes long');
     return null;
   }
-  if (minutes[1] < 10) minutes[1] = '0'+minutes[1];
-  if (seconds && seconds[1] < 10) seconds[1] = seconds[1]+'0';
-  if (!seconds) seconds[1] = '00';
-  return `${minutes[1]}:${seconds[1]}`;
+  if (minutes[1] < 10) minutes = '0'+minutes[1];
+  if (!minutes) minutes = '00';
+  if (seconds && seconds[1] < 10) seconds = '0'+seconds[1];
+  if (!seconds) seconds = '00';
+  return `${minutes}:${seconds}`;
 }
