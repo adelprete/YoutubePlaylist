@@ -40,8 +40,8 @@ exports.handler = (event, context, callback) => {
             });
           } else {
             // See if we need to delete some videos
-            if (data.Items.length > 30) {
-                let itemsToRemove = data.Items.splice(30, data.Items.length-1);
+            if (data.Items.length > 40) {
+                let itemsToRemove = data.Items.splice(40, data.Items.length-1);
                 const deleteRequests = itemsToRemove.map(function(x) {
                     let deleteRequest = {
                         'DeleteRequest': {
