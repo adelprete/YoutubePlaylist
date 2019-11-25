@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width">
+    <title>Youtube Playlist</title>
+    <link href="css/history.css" rel="stylesheet">
+    <link href="css/media-1.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="sub-header">
+          <div class="heading-text">
+            <a class="back-text" href="http://youtube-playlist-anthony-delprete.s3-website-us-east-1.amazonaws.com/">
+              <img src='media/left_chevron_white.png' class="back-arrow">Back</a> 
+            &nbsp;&nbsp;&nbsp;Playlist History</div>
+        </div>
+      </div>
+      <div class="main">
+        <div id="tracks" class="tracks"></div>
+      </div>
+      <div class="footer">
+        <a href="http://youtube-playlist-anthony-delprete.s3-website-us-east-1.amazonaws.com/">Back To Playlist</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://github.com/adelprete/YoutubePlaylist" target="_blank">Github</a> 
+      </div>
+    </div>
+    
+    <template id="track">
+      <a class="track" href="" target="_blank">
+        <span class="title"></span><br>
+        <span class="artist"></span>
+      </a>
+    </template>
+    <script src="js/history.js"></script>
+  </body>
+</html>
