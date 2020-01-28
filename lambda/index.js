@@ -110,7 +110,7 @@ function addToHistory(artist, title, videoId) {
             Key: process.env.FILE_KEY
         };
         s3.getObject(params, function(err, result) {
-            console.log('err: ', err);
+            console.log('err in addToHistory: ', err);
             let playlistHistory = JSON.parse(result.Body.toString());
             console.log('artist: ', artist);
             console.log('title: ', title);
