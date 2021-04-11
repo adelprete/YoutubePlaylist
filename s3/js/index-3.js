@@ -440,7 +440,7 @@ function onPlayerStateChange(event) {
 * grab their details.
 */
 function loadClient() {
-  gapi.client.setApiKey("AIzaSyCE3B2Xk3k7Gbe8rSQWgkBdLT10y-4mKso");
+  gapi.client.setApiKey("AIzaSyB5BInmUlo7VwPuV7Sadc7ZLh6VGkgDG18");
   return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
       .then(function() { console.log("GAPI client loaded for API"); },
             function(err) { console.error("Error loading GAPI client for API", err); });
@@ -452,7 +452,7 @@ function loadClient() {
 * The token can only used by this website ;).
 */
 gapi.load("client:auth2", function() {
-  gapi.auth2.init({client_id: "816024298430-bc7f5ke7f7i0tphiuf818iddarognobs.apps.googleusercontent.com"})
+  gapi.auth2.init({client_id: "816024298430-10r0u704vn2rffo3d6a6gspsnpmmv4f4.apps.googleusercontent.com"})
     .then(function(){
       loadClient();
     });
