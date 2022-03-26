@@ -3,7 +3,7 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
 exports.handler = (event, context, callback) => {
-    
+    const maxPlaylistSize = 50;
     if (event.path === '/add-video') {
         const requestBody = JSON.parse(event.body);
         requestBody['CreatedAt'] = new Date().toISOString();
@@ -42,8 +42,8 @@ exports.handler = (event, context, callback) => {
             });
           } else {
             // See if we need to delete some videos
-            if (data.Items.length > 40) {
-                let itemsToRemove = data.Items.splice(40, data.Items.length-1);
+            if (data.Items.length > maxPlaylistSize) {
+                let itemsToRemove = data.Items.splice(maxPlaylistSize, data.Items.length-1);
                 // Record the removed songs to our history
                 itemsToRemove.forEach(item => addToHistory(item.CustomArtist, item.CustomTitle, item.VideoId));
                 // Create our delete requests for DynamoDB
